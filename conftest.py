@@ -1,3 +1,5 @@
+import os
+
 import pytest
 from playwright.sync_api import sync_playwright, Browser, BrowserContext, Page
 
@@ -9,7 +11,8 @@ BASE_URL = "https://www.saucedemo.com"
 def browser():
     """Launch browser once for the entire test session."""
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False, slow_mo=800)
+        is_ci = os.getenv("CI") == "true"  # GitHub Actions sets CI=true automatically
+        browser = p.chromium.launch(headless=is_ci, slow_mo=0 if is_ci else 800)    
         yield browser
         browser.close()
 
